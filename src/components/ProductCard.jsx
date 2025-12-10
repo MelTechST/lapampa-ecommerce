@@ -2,6 +2,7 @@ import { Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import { useContext } from "react";
+import { toast } from "react-toastify";
 
 export default function ProductCard({ product }) {
     const { addToCarrito } = useContext(CartContext);
@@ -13,7 +14,7 @@ export default function ProductCard({ product }) {
             <Card.Img
                 variant="top"
                 src={product.image}
-                alt={product.wine}
+                // alt={product.wine}
                 className="mx-auto d-block"
                 style={{ 
                     height: "220px", 
@@ -26,8 +27,8 @@ export default function ProductCard({ product }) {
             <Card.Body className="d-flex flex-column justify-content-between">
             
             <div>
-                <Card.Title className="fw-bold text-danger">{product.wine}</Card.Title>
-                <Card.Text className="text-muted mb-2">{product.winery}</Card.Text>
+                <Card.Title className="fw-bold text-danger">{product.title}</Card.Title>
+                {/* <Card.Text className="text-muted mb-2">{product.winery}</Card.Text> */}
                 <Card.Text className="fw-semibold">${price}</Card.Text>
             </div>
             
@@ -35,7 +36,14 @@ export default function ProductCard({ product }) {
                 <Button
                     variant="danger"
                     size="sm"
-                    onClick={() => addToCarrito({ ...product, price })}>
+                    onClick={() => {
+                        addToCarrito({ ...product, price });
+                        toast.success("Producto agregado al carrito" , {
+                            position: "bottom-right",
+                            autoClose: 1500
+                        });
+                    }}
+                >
                     Agregar
                 </Button>
                 <Button

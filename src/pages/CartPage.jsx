@@ -1,18 +1,21 @@
 import { useContext, useEffect, useState } from "react";
 import { Container, Row, Col, Card, Button, Form, Spinner, Alert } from "react-bootstrap";
 import { CartContext } from "../context/CartContext";
+import { toast } from "react-toastify";
+
+//venta por cajas (categoria)! mas adelante
 
 export default function CartPage() {
-    const { cart, addToCarrito, removeFromCarrito, decreaseFromCarrito} = useContext(CartContext);
+    const { carrito, addToCarrito, removeFromCarrito, decreaseFromCarrito, clearCarrito,} = useContext(CartContext);
 
     // CALCULO DEL TOTAL EN LA COMPRA
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const total = carrito.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const redondeoTotal=Math.round (total*100) / 100;
 
     return (
         <Container className="py-5">
             <h2 className="fw-bold mb-4">Carrito</h2>
-            {cart.map((item) => (
+            {carrito.map((item) => (
                 <Card key={item.id} className="mb-3 shadow-sm border-0">
                     <Card.Body>
                         <Row className="align-items-center">
@@ -32,9 +35,9 @@ export default function CartPage() {
 
                     {/* INFORMACIÓN */}
                         <Col xs={12} md={4}>
-                            <h5 className="fw-bold">{item.wine}</h5>
-                            <p className="text-muted mb-0">{item.winery}</p>
-                            <p className="text-muted small mb-0">{item.location}</p>
+                            <h5 className="fw-bold">{item.title}</h5>
+                            <p className="text-muted mb-0">ID: {item.id}</p>
+                            {/* <p className="text-muted small mb-0">{item.location}</p> */}
                         </Col>
 
                         {/* LA CANTIDAD DEL PRODUC */}
@@ -104,7 +107,10 @@ export default function CartPage() {
                             variant="danger"
                             size="lg"
                             className="w-100 fw-bold"
-                            onClick={() => alert("Compra realizada ✅")}
+                            onClick={() => {
+                                toast.success("Compra realizada con éxito")
+                                clearCarrito();
+                            }}
                         >
                         Pagar
                         </Button>

@@ -3,24 +3,16 @@ import { useContext } from "react";
 import { Navbar, Container, Nav, Button, Badge } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Header(){
-    const { cart} =useContext(CartContext);
-    const { isAuthenticated, login, logout} = useContext(AuthContext);
+    const { token, logout} = useAuth();
+    const {carrito = []}=useContext(CartContext);
 
-    // // const itemsCount = cart.reduce((s,p) => s + (p.qty||0), 0);
-    // const itemsCount = cart.reduce((acc,p) => acc + p.qty, 0);
-
-
-    const navigate = useNavigate();
-    const isAuth = isAuthenticated || localStorage.getItem('auth') === 'true';
-
-    const cerrarSesion = () => {
-    localStorage.removeItem('auth');
-    navigate('/login');
-    };
-
+    const itemsCount = carrito.reduce(
+        (acc, item) => acc + (item.quantity || 1),
+        0
+    );
 
     return (
         <Navbar bg="light" expand="lg" className="border-bottom shadow-sm">
@@ -33,24 +25,34 @@ export default function Header(){
                     <Nav className="me-auto">
                         <Nav.Link as={Link} to="/">Inicio</Nav.Link>
                         <Nav.Link as={Link} to="/products">Productos</Nav.Link>
-                        <Nav.Link as={Link} to="/cartpage">Carrito</Nav.Link>
+
+                        <Nav.Link as={Link} to="/cartpage" className="position-relative">
+                        Carrito
+                        {itemsCount >0 && (
+                            <Badge 
+                                bg="danger"
+                                pill
+                                className="ms-1"
+                            >
+                                {itemsCount}
+                            </Badge>
+                        )}
+                        </Nav.Link>
+
+
                             {/* {itemsCount > 0 && <Badge bg="danger">{itemsCount}</Badge>} */}
                         {/* <Nav.Link as={Link} to="/us">Nosotros</Nav.Link> */}
                         <Nav.Link as={Link} to="/contact">Contacto</Nav.Link>
-
-                        {isAuthenticated && (
-                        <>
-                        <Nav.Link as={Link} to="/perfil/usuario123">Perfil</Nav.Link>
-                        <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
-                        </>
+                        {token && (
+                            <Nav.Link as={Link} to="/crudproductos">CRUD</Nav.Link>
                         )}
                     </Nav>
                     <div className="d-flex gap-3 justify-content-end">
-                        {isAuthenticated ? (
+                        {token ? (
                             <Button variant="outline-danger" onClick={logout}>Cerrar sesión</Button>
-                        ) : (
-                            <Button className="d-flex gap-3 justify-content-end"  variant="danger" onClick={login}>Iniciar sesión</Button>
-                        )}
+                        ) : ( 
+                            <Button className="d-flex gap-3 justify-content-end" variant="danger" as={Link} to="/login">Admin</Button>
+                        )} 
                     </div>
                 </Navbar.Collapse>
             </Container>
